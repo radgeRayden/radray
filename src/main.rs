@@ -41,12 +41,18 @@ fn ray_color(ray: Ray) -> DVec3 {
 }
 
 fn pixel_color(x: usize, y: usize) -> Color {
-    let u = (x as f64) / (IMAGE_WIDTH as f64);
-    let v = (y as f64) / (IMAGE_HEIGHT as f64);
+    let u = (x as f64) / ((IMAGE_WIDTH - 1) as f64);
+    // flip v because our coordinate system is y-up
+    let v = 1.0 - (y as f64) / ((IMAGE_HEIGHT - 1) as f64);
 
     // transform to camera space
-    let origin = dvec3(0.0, 0.0, -0.5);
-    let direction = dvec3(u * 2.0 * ASPECT_RATIO - ASPECT_RATIO, v * 2.0 - 1.0, -0.5) - origin;
+    let origin = dvec3(0.0, 0.0, 0.0);
+    let viewport_height = 2.0;
+    let viewport_width = viewport_height * ASPECT_RATIO;
+    let focal_length = 1.0;
+    let lower_left = origin - dvec3(viewport_width / 2.0, viewport_height / 2.0, focal_length);
+
+    let direction = lower_left + dvec3(viewport_width * u, viewport_height * v, 0.0) - origin;
 
     let ray = Ray {origin, direction};
     let c = ray_color(ray);
