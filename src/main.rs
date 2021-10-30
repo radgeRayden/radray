@@ -11,7 +11,7 @@ struct Color {
 }
 
 impl Color {
-    fn from_normalized(r: f32, g: f32, b: f32) -> Color {
+    fn from_normalized(r: f64, g: f64, b: f64) -> Color {
         Color {
             r: (r * 255.0).round() as u8,
             g: (g * 255.0).round() as u8,
@@ -20,7 +20,7 @@ impl Color {
     }
 }
 
-fn color(x: f32, y: f32) -> Color {
+fn color(x: f64, y: f64) -> Color {
     let r = x;
     let g = y;
     let b = x * y;
@@ -33,7 +33,7 @@ fn main() -> std::io::Result<()> {
     for y in 0..IMAGE_HEIGHT {
         for x in 0..IMAGE_WIDTH {
             let i = (y * IMAGE_WIDTH + x) * 3;
-            let c = color((x as f32) / (IMAGE_WIDTH as f32), (y as f32) / (IMAGE_HEIGHT as f32));
+            let c = color((x as f64) / (IMAGE_WIDTH as f64), (y as f64) / (IMAGE_HEIGHT as f64));
             image_data[i] = c.r;
             image_data[i+1] = c.g;
             image_data[i+2] = c.b;
