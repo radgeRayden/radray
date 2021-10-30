@@ -1,4 +1,5 @@
 use std::io::Write;
+use glam::{ DVec3 as vec3 };
 
 const IMAGE_WIDTH:usize = 400;
 const IMAGE_HEIGHT:usize = 200;
@@ -20,11 +21,28 @@ impl Color {
     }
 }
 
-fn color(x: f64, y: f64) -> Color {
-    let r = x;
-    let g = y;
-    let b = x * y;
-    Color::from_normalized(r, g, b)
+struct Ray {
+    origin: vec3,
+    direction: vec3
+}
+
+impl Ray {
+    fn at(self, t: f64) -> vec3 {
+        self.origin + self.direction * t
+    }
+}
+
+fn ray_color(ray: Ray) -> vec3 {
+    vec3::ZERO
+}
+
+fn pixel_color(x: usize, y: usize) -> Color {
+    let u = (x as f64) / (IMAGE_WIDTH as f64);
+    let v = (y as f64) / (IMAGE_HEIGHT as f64);
+
+    let ray = Ray {origin: vec3::ZERO, direction: vec3::ZERO};
+    let c = ray_color(ray);
+    Color::from_normalized(c.x, c.y, c.z)
 }
 
 fn main() -> std::io::Result<()> {
@@ -33,7 +51,7 @@ fn main() -> std::io::Result<()> {
     for y in 0..IMAGE_HEIGHT {
         for x in 0..IMAGE_WIDTH {
             let i = (y * IMAGE_WIDTH + x) * 3;
-            let c = color((x as f64) / (IMAGE_WIDTH as f64), (y as f64) / (IMAGE_HEIGHT as f64));
+            let c = pixel_color(x, y);
             image_data[i] = c.r;
             image_data[i+1] = c.g;
             image_data[i+2] = c.b;
