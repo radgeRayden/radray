@@ -1,9 +1,10 @@
 use std::io::Write;
-use glam::{ DVec3 as vec3 };
+use glam::{DVec3, dvec3};
 
 const IMAGE_WIDTH:usize = 400;
 const IMAGE_HEIGHT:usize = 200;
 const BUFFER_SIZE:usize = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
+const ASPECT_RATIO:f64 = (IMAGE_WIDTH as f64) / (IMAGE_HEIGHT as f64);
 
 struct Color {
     r: u8,
@@ -22,25 +23,32 @@ impl Color {
 }
 
 struct Ray {
-    origin: vec3,
-    direction: vec3
+    origin: DVec3,
+    direction: DVec3
 }
 
 impl Ray {
-    fn at(self, t: f64) -> vec3 {
+    fn at(self, t: f64) -> DVec3 {
         self.origin + self.direction * t
     }
 }
 
-fn ray_color(ray: Ray) -> vec3 {
-    vec3::ZERO
+fn ray_color(ray: Ray) -> DVec3 {
+    let unit_direction = ray.direction.normalize();
+    let t = 0.5 * (unit_direction.y + 1.0);
+
+    DVec3::lerp(dvec3(1.0,1.0,1.0), dvec3(0.5, 0.7, 1.0), t)
 }
 
 fn pixel_color(x: usize, y: usize) -> Color {
     let u = (x as f64) / (IMAGE_WIDTH as f64);
     let v = (y as f64) / (IMAGE_HEIGHT as f64);
 
-    let ray = Ray {origin: vec3::ZERO, direction: vec3::ZERO};
+    // transform to camera space
+    let origin = dvec3(0.0, 0.0, -0.5);
+    let direction = dvec3(u * 2.0 * ASPECT_RATIO - ASPECT_RATIO, v * 2.0 - 1.0, -0.5) - origin;
+
+    let ray = Ray {origin, direction};
     let c = ray_color(ray);
     Color::from_normalized(c.x, c.y, c.z)
 }
