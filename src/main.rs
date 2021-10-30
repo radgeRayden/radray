@@ -14,10 +14,10 @@ fn color(x: f32, y: f32) -> Color {
     let r = (x * 255.0) as u8;
     let g = (y * 255.0) as u8;
     let b = (x * y * 255.0) as u8;
-    return Color {r, g, b};
+    Color {r, g, b}
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let mut image_data: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
 
     for y in 0..IMAGE_HEIGHT {
@@ -30,10 +30,11 @@ fn main() {
         }
     }
 
-    let mut buffer = std::fs::File::create("output.ppm").unwrap();
+    let mut buffer = std::fs::File::create("output.ppm")?;
 
     // write PPM header
-    buffer.write(format!("P6 {width} {height} 255\n", width=IMAGE_WIDTH, height=IMAGE_HEIGHT).as_bytes());
+    buffer.write(format!("P6 {width} {height} 255\n", width=IMAGE_WIDTH, height=IMAGE_HEIGHT).as_bytes())?;
     // and then the data!
-    buffer.write(&image_data);
+    buffer.write(&image_data)?;
+    Ok(())
 }
