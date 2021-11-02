@@ -2,7 +2,7 @@ use std::io::Write;
 use glam::{DVec3, dvec3};
 
 const IMAGE_WIDTH:usize = 400;
-const IMAGE_HEIGHT:usize = 200;
+const IMAGE_HEIGHT:usize = 225;
 const BUFFER_SIZE:usize = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
 const ASPECT_RATIO:f64 = (IMAGE_WIDTH as f64) / (IMAGE_HEIGHT as f64);
 
@@ -33,7 +33,21 @@ impl Ray {
     }
 }
 
+fn hit_sphere(center: DVec3, radius: f64, ray: &Ray) -> bool {
+    let oc = ray.origin - center;
+    let a = DVec3::dot(ray.direction, ray.direction);
+    let b = 2.0 * DVec3::dot(oc, ray.direction);
+    let c = DVec3::dot(oc, oc) - radius*radius;
+    let discriminant = b*b - 4.0 * a * c;
+
+    discriminant > 0.0
+}
+
 fn ray_color(ray: Ray) -> DVec3 {
+    if hit_sphere(dvec3(0.0,0.0,-1.0), 0.5, &ray) {
+        return dvec3(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = ray.direction.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
 
